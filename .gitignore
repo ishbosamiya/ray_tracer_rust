@@ -1,0 +1,8 @@
+/target
+*~
+*#*#*
+.gdb_history
+peda-session*.*
+.references/
+temp/
+.testing/
