@@ -6,3 +6,4 @@ peda-session*.*
 .references/
 temp/
 .testing/
+*.ppm
