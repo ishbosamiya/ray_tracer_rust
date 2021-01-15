@@ -1,25 +1,25 @@
 use std::fs::File;
 use std::io::prelude::*;
 
-struct PPM {
+pub struct PPM {
     data: Vec<Vec<Vec3>>,
 }
 
 #[derive(Clone)]
-struct Vec3 {
+pub struct Vec3 {
     x: f64,
     y: f64,
     z: f64,
 }
 
 impl Vec3 {
-    fn new(x: f64, y: f64, z: f64) -> Vec3 {
+    pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
         return Vec3 { x, y, z };
     }
 }
 
 impl PPM {
-    fn new(data: &Vec<Vec<Vec3>>) -> PPM {
+    pub fn new(data: &Vec<Vec<Vec3>>) -> PPM {
         assert!(data.len() > 0);
         assert!(data[0].len() > 0);
 
@@ -28,7 +28,7 @@ impl PPM {
         return PPM { data: cloned_data };
     }
 
-    fn write_to_file<P: AsRef<std::path::Path>>(&self, path: P) -> std::io::Result<()> {
+    pub fn write_to_file<P: AsRef<std::path::Path>>(&self, path: P) -> std::io::Result<()> {
         let mut string_data = String::new();
 
         let header = "P3\n";
@@ -59,22 +59,4 @@ impl PPM {
 
         return Ok(());
     }
-}
-
-fn main() {
-    let vals: Vec<Vec<Vec3>> = vec![
-        vec![
-            Vec3::new(1.0, 0.0, 0.0),
-            Vec3::new(0.0, 1.0, 0.0),
-            Vec3::new(0.0, 0.0, 1.0),
-        ],
-        vec![
-            Vec3::new(1.0, 1.0, 0.0),
-            Vec3::new(1.0, 1.0, 1.0),
-            Vec3::new(0.0, 0.0, 0.0),
-        ],
-    ];
-
-    let ppm = PPM::new(&vals);
-    ppm.write_to_file("image.ppm").unwrap();
 }
