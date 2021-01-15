@@ -1,21 +1,12 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+mod math;
+
+pub use math::Vec3;
+
 pub struct PPM {
     data: Vec<Vec<Vec3>>,
-}
-
-#[derive(Clone)]
-pub struct Vec3 {
-    x: f64,
-    y: f64,
-    z: f64,
-}
-
-impl Vec3 {
-    pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
-        return Vec3 { x, y, z };
-    }
 }
 
 impl PPM {
@@ -42,11 +33,11 @@ impl PPM {
 
         for i in &self.data {
             for j in i {
-                string_data.push_str(&((j.x * 255.0) as i64 % 256).to_string());
+                string_data.push_str(&((j.x() * 255.0) as i64 % 256).to_string());
                 string_data.push_str(" ");
-                string_data.push_str(&((j.y * 255.0) as i64 % 256).to_string());
+                string_data.push_str(&((j.y() * 255.0) as i64 % 256).to_string());
                 string_data.push_str(" ");
-                string_data.push_str(&((j.z * 255.0) as i64 % 256).to_string());
+                string_data.push_str(&((j.z() * 255.0) as i64 % 256).to_string());
                 string_data.push_str(" ");
             }
             string_data.push_str("\n");
