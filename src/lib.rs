@@ -52,8 +52,6 @@ impl PPM {
             string_data.push_str("\n");
         }
 
-        print!("{}", string_data);
-
         let mut fout = File::create(path).unwrap();
         fout.write_all(string_data.as_bytes())?;
 
