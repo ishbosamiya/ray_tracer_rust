@@ -7,6 +7,11 @@ pub struct Vec3 {
     data: [f64; 3],
 }
 
+pub struct Ray {
+    origin: Vec3,
+    direction: Vec3,
+}
+
 impl Clone for Vec3 {
     fn clone(&self) -> Vec3 {
         return Vec3 {
@@ -56,6 +61,27 @@ impl Vec3 {
 
     pub fn unit_vector(&self) -> Vec3 {
         return self / self.length();
+    }
+}
+
+impl Ray {
+    pub fn new(origin: &Vec3, direction: &Vec3) -> Ray {
+        return Ray {
+            origin: origin.clone(),
+            direction: direction.clone(),
+        };
+    }
+
+    pub fn at(&self, t: f64) -> Vec3 {
+        return &self.origin + t * &self.direction;
+    }
+
+    pub fn origin(&self) -> &Vec3 {
+        return &self.origin;
+    }
+
+    pub fn direction(&self) -> &Vec3 {
+        return &self.direction;
     }
 }
 
