@@ -7,11 +7,14 @@ use ray_tracer_rust::Sphere;
 use ray_tracer_rust::Vec3;
 use ray_tracer_rust::PPM;
 
+use rand::random;
+
 fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let width: usize = 1280;
     let height: usize = (width as f64 / aspect_ratio) as usize;
     let mut image = Image::new(width, height);
+    let num_samples = 10;
 
     let viewport_height = 2.0;
     let focal_length = 1.0;
@@ -30,14 +33,20 @@ fn main() {
     for (j, row) in image.get_mut_pixels().iter_mut().enumerate() {
         for (i, pixel) in row.iter_mut().enumerate() {
             let j = height - j - 1;
-            let u = i as f64 / (width - 1) as f64;
-            let v = j as f64 / (height - 1) as f64;
 
-            let ray = camera.get_ray(u, v);
+            *pixel = Vec3::new(0.0, 0.0, 0.0);
+            for _ in 0..num_samples {
+                let u = (i as f64 + random::<f64>()) / (width - 1) as f64;
+                let v = (j as f64 + random::<f64>()) / (height - 1) as f64;
 
-            let color = ray_color(&ray, &objects);
+                let ray = camera.get_ray(u, v);
 
-            *pixel = color;
+                let color = ray_color(&ray, &objects);
+
+                *pixel += color;
+            }
+
+            *pixel /= num_samples as f64;
         }
     }
 
