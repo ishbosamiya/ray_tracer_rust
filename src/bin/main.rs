@@ -1,3 +1,4 @@
+use ray_tracer_rust::Camera;
 use ray_tracer_rust::Hittable;
 use ray_tracer_rust::HittableList;
 use ray_tracer_rust::Image;
@@ -13,13 +14,13 @@ fn main() {
     let mut image = Image::new(width, height);
 
     let viewport_height = 2.0;
-    let viewport_width = viewport_height as f64 * aspect_ratio;
     let focal_length = 1.0;
-    let origin = Vec3::new(0.0, 0.0, 0.0);
-    let horizontal = Vec3::new(viewport_width, 0.0, 0.0);
-    let vertical = Vec3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner =
-        &origin - &horizontal / 2.0 - &vertical / 2.0 - Vec3::new(0.0, 0.0, focal_length);
+    let camera = Camera::new(
+        viewport_height,
+        aspect_ratio,
+        focal_length,
+        Vec3::new(0.0, 0.0, 0.0),
+    );
 
     let mut objects = HittableList::new();
     objects.add_object(Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5)));
@@ -32,10 +33,7 @@ fn main() {
             let u = i as f64 / (width - 1) as f64;
             let v = j as f64 / (height - 1) as f64;
 
-            let ray = Ray::new(
-                &origin,
-                &(&lower_left_corner + u * &horizontal + v * &vertical - &origin),
-            );
+            let ray = camera.get_ray(u, v);
 
             let color = ray_color(&ray, &objects);
 

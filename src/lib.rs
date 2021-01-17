@@ -1,9 +1,11 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+mod camera;
 mod hittable;
 mod math;
 
+pub use camera::Camera;
 pub use hittable::HitRecord;
 pub use hittable::Hittable;
 pub use hittable::HittableList;
