@@ -3,20 +3,61 @@ use std::io::prelude::*;
 
 mod math;
 
+pub use math::Ray;
 pub use math::Vec3;
 
-pub struct PPM {
-    data: Vec<Vec<Vec3>>,
+pub struct Image {
+    pixels: Vec<Vec<Vec3>>,
+    width: usize,
+    height: usize,
 }
 
-impl PPM {
-    pub fn new(data: &Vec<Vec<Vec3>>) -> PPM {
-        assert!(data.len() > 0);
-        assert!(data[0].len() > 0);
+impl Image {
+    pub fn new(width: usize, height: usize) -> Image {
+        let mut pixels: Vec<Vec<Vec3>> = Vec::with_capacity(height);
+        let mut empty_row = Vec::with_capacity(width);
+        empty_row.resize(width, Vec3::new(0.0, 0.0, 0.0));
+        pixels.resize(height, empty_row);
 
-        let cloned_data = data.clone();
+        return Image {
+            pixels,
+            width,
+            height,
+        };
+    }
 
-        return PPM { data: cloned_data };
+    pub fn set_pixel(&mut self, i: usize, j: usize, data: Vec3) {
+        self.pixels[i][j] = data;
+    }
+
+    pub fn get_pixel(&self, i: usize, j: usize) -> &Vec3 {
+        return &self.pixels[i][j];
+    }
+
+    pub fn width(&self) -> usize {
+        return self.width;
+    }
+
+    pub fn height(&self) -> usize {
+        return self.height;
+    }
+
+    pub fn get_mut_pixels(&mut self) -> &mut Vec<Vec<Vec3>> {
+        return &mut self.pixels;
+    }
+
+    pub fn get_pixels(&self) -> &Vec<Vec<Vec3>> {
+        return &self.pixels;
+    }
+}
+
+pub struct PPM<'a> {
+    image: &'a Image,
+}
+
+impl PPM<'_> {
+    pub fn new(image: &Image) -> PPM {
+        return PPM { image };
     }
 
     pub fn write_to_file<P: AsRef<std::path::Path>>(&self, path: P) -> std::io::Result<()> {
@@ -25,13 +66,13 @@ impl PPM {
         let header = "P3\n";
         string_data.push_str(header);
 
-        let sizing = format!("{} {}\n", self.data[0].len(), self.data.len());
+        let sizing = format!("{} {}\n", self.image.width(), self.image.height());
         string_data.push_str(&sizing);
 
         let max_val = "255\n";
         string_data.push_str(max_val);
 
-        for i in &self.data {
+        for i in self.image.get_pixels() {
             for j in i {
                 string_data.push_str(&((j.x() * 255.0) as i64 % 256).to_string());
                 string_data.push_str(" ");
