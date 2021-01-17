@@ -1,8 +1,13 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+mod hittable;
 mod math;
 
+pub use hittable::HitRecord;
+pub use hittable::Hittable;
+pub use hittable::HittableList;
+pub use hittable::Sphere;
 pub use math::Ray;
 pub use math::Vec3;
 

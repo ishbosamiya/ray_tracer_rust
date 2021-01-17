@@ -1,5 +1,8 @@
+use ray_tracer_rust::Hittable;
+use ray_tracer_rust::HittableList;
 use ray_tracer_rust::Image;
 use ray_tracer_rust::Ray;
+use ray_tracer_rust::Sphere;
 use ray_tracer_rust::Vec3;
 use ray_tracer_rust::PPM;
 
@@ -18,6 +21,11 @@ fn main() {
     let lower_left_corner =
         &origin - &horizontal / 2.0 - &vertical / 2.0 - Vec3::new(0.0, 0.0, focal_length);
 
+    let mut objects = HittableList::new();
+    objects.add_object(Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5)));
+    objects.add_object(Box::new(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5)));
+    objects.add_object(Box::new(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5)));
+
     for (j, row) in image.get_mut_pixels().iter_mut().enumerate() {
         for (i, pixel) in row.iter_mut().enumerate() {
             let j = height - j - 1;
@@ -29,7 +37,7 @@ fn main() {
                 &(&lower_left_corner + u * &horizontal + v * &vertical - &origin),
             );
 
-            let color = ray_color(&ray);
+            let color = ray_color(&ray, &objects);
 
             *pixel = color;
         }
@@ -39,26 +47,15 @@ fn main() {
     ppm.write_to_file("image.ppm").unwrap();
 }
 
-fn hit_sphere(center: &Vec3, radius: f64, ray: &Ray) -> f64 {
-    let oc = ray.origin() - center;
-    let a = ray.direction().length_squared();
-    let half_b = oc.dot(&ray.direction());
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-    if discriminant < 0.0 {
-        return -1.0;
+fn ray_color(ray: &Ray, objects: &HittableList) -> Vec3 {
+    match objects.hit(ray, 0.001, 1000.0) {
+        Some(record) => {
+            return 0.5 * (record.get_normal() + Vec3::new(1.0, 1.0, 1.0));
+        }
+        None => {
+            let unit_direction = ray.direction().unit_vector();
+            let t = 0.5 * (unit_direction.y() + 1.0);
+            return (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0);
+        }
     }
-    return (-half_b - discriminant.sqrt()) / a;
-}
-
-fn ray_color(ray: &Ray) -> Vec3 {
-    let sphere_center = Vec3::new(0.0, 0.0, -1.0);
-    let t = hit_sphere(&sphere_center, 0.5, ray);
-    if t > 0.0 {
-        let normal = (ray.at(t) - &sphere_center).unit_vector();
-        return 0.5 * (normal + Vec3::new(1.0, 1.0, 1.0));
-    }
-    let unit_direction = ray.direction().unit_vector();
-    let t = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0);
 }
