@@ -1,6 +1,21 @@
 extern crate overload;
 use overload::overload;
+use rand::random;
 use std::ops;
+
+pub fn random_f64(min: f64, max: f64) -> f64 {
+    return min + (max - min) * random::<f64>();
+}
+
+pub fn random_in_unit_sphere() -> Vec3 {
+    loop {
+        let p = Vec3::new_random();
+        if p.length_squared() >= 1.0 {
+            continue;
+        }
+        return p;
+    }
+}
 
 #[derive(Debug, PartialEq)]
 pub struct Vec3 {
@@ -23,6 +38,18 @@ impl Clone for Vec3 {
 impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
         return Vec3 { data: [x, y, z] };
+    }
+
+    pub fn new_random() -> Vec3 {
+        return Vec3::new(random::<f64>(), random::<f64>(), random::<f64>());
+    }
+
+    pub fn new_random_range(min: f64, max: f64) -> Vec3 {
+        return Vec3::new(
+            random_f64(min, max),
+            random_f64(min, max),
+            random_f64(min, max),
+        );
     }
 
     pub fn x(&self) -> f64 {

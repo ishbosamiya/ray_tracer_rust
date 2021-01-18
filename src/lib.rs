@@ -10,6 +10,8 @@ pub use hittable::HitRecord;
 pub use hittable::Hittable;
 pub use hittable::HittableList;
 pub use hittable::Sphere;
+pub use math::random_f64;
+pub use math::random_in_unit_sphere;
 pub use math::Ray;
 pub use math::Vec3;
 
