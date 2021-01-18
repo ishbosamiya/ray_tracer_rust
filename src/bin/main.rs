@@ -48,6 +48,7 @@ fn main() {
             }
 
             *pixel /= num_samples as f64;
+            *pixel = Vec3::new(pixel.x().sqrt(), pixel.y().sqrt(), pixel.z().sqrt());
         }
     }
 
